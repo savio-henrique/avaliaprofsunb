@@ -1,15 +1,6 @@
-FROM node:18
+FROM mysql:8
 
-WORKDIR /home/node/app
+WORKDIR /home/
 
-COPY ./app-bd/backend/package*.json ./
-
-RUN npm install yarn
-
-RUN yarn
-
-COPY ./app-bd/backend/ .
-
-RUN [ "yarn", "tsc"]
-
-EXPOSE 3333
+EXPOSE 3306
+#ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'bd'

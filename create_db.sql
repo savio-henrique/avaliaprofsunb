@@ -1,3 +1,4 @@
+ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'bd';
 -- projeto_bd.Estudantes definition
 
 CREATE TABLE `Estudantes` (
@@ -92,9 +93,9 @@ CREATE TABLE `Turma_Prof` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
--- projeto_bd.Avaliações definition
+-- projeto_bd.Avaliacoes definition
 
-CREATE TABLE `Avaliações` (
+CREATE TABLE `Avaliacoes` (
   `pk_codigo` int NOT NULL AUTO_INCREMENT,
   `fk_estudante` int NOT NULL,
   `fk_professor` int NOT NULL,
@@ -102,10 +103,10 @@ CREATE TABLE `Avaliações` (
   `int_nota` int NOT NULL,
   `bo_status` tinyint(1) NOT NULL,
   PRIMARY KEY (`pk_codigo`),
-  KEY `Avaliações_FK_PROF` (`fk_professor`),
-  KEY `Avaliações_FK_EST` (`fk_estudante`),
-  CONSTRAINT `Avaliações_FK_EST` FOREIGN KEY (`fk_estudante`) REFERENCES `Estudantes` (`pk_matricula`),
-  CONSTRAINT `Avaliações_FK_PROF` FOREIGN KEY (`fk_professor`) REFERENCES `Professores` (`pk_matricula`)
+  KEY `Avaliacoes_FK_PROF` (`fk_professor`),
+  KEY `Avaliacoes_FK_EST` (`fk_estudante`),
+  CONSTRAINT `Avaliacoes_FK_EST` FOREIGN KEY (`fk_estudante`) REFERENCES `Estudantes` (`pk_matricula`),
+  CONSTRAINT `Avaliacoes_FK_PROF` FOREIGN KEY (`fk_professor`) REFERENCES `Professores` (`pk_matricula`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
@@ -122,7 +123,7 @@ CREATE TABLE `Denuncias` (
   KEY `Denuncias_FK` (`fk_administrador`),
   KEY `Denuncias_FK_Aval` (`fk_avaliacao`),
   CONSTRAINT `Denuncias_FK` FOREIGN KEY (`fk_administrador`) REFERENCES `Administradores` (`pk_id`),
-  CONSTRAINT `Denuncias_FK_Aval` FOREIGN KEY (`fk_avaliacao`) REFERENCES `Avaliações` (`pk_codigo`),
+  CONSTRAINT `Denuncias_FK_Aval` FOREIGN KEY (`fk_avaliacao`) REFERENCES `Avaliacoes` (`pk_codigo`),
   CONSTRAINT `Denuncias_FK_Est` FOREIGN KEY (`fk_estudante`) REFERENCES `Estudantes` (`pk_matricula`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 

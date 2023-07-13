@@ -1,19 +1,20 @@
 services:
   db:
-    image: "mysql:8"
+    build: .
     volumes:
       - /var/lib/mysql
+      - ./:/home/files/
     environment:
       - HOST_HOSTNAME=localhost
       - MYSQL_ROOT_PASSWORD=bd
       - MYSQL_DATABASE=projeto_bd
-  node:
-    build: .
-    user: node
-    environment:
-      - NODE_ENV=production
-    expose:
-      - "3333"
-    command: ["node", "dist/index.js"]
-    links:
-      - db
+    networks:
+      back-tier:
+        ipv4_address: 172.18.0.2
+
+networks:
+  back-tier:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.18.0.0/24"

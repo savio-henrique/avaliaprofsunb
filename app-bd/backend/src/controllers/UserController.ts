@@ -135,6 +135,14 @@ class ControllerUser implements IUserController{
 
     async auth(matricula:number, senha:string):Promise<boolean> {
         var final = false;
+        var sql = "SELECT * FROM `Estudantes` WHERE pk_matricula = ? AND str_senha = ?"
+
+        await this.use_query_data(sql,[matricula,senha])
+        .then ((result) =>{
+            if (result.length != 0) return
+            final = true
+        })
+        
         return final;
     }
 }
@@ -196,6 +204,12 @@ class UserRoutes{
     public async delete(req: Request, res: Response){
         var resposta = Number(req.params.id)
         return res.send(await UserRoutes.controladora.delete(resposta))
+    }
+
+    public async auth(req: Request, res: Response){
+        var matricula = Number(req.body.matricula)
+        var senha = md5(req.body.senha)
+        return res.send(await UserRoutes.controladora.auth(matricula,senha))
     }
 }
 
