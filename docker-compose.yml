@@ -1,17 +1,4 @@
 services:
-  node:
-    image: "node:8"
-    user: node
-    working_dir: /home/node/app
-    environment:
-      - NODE_ENV=production
-    volumes:
-      - ./app-bd:/home/node/app
-    expose:
-      - "8081"
-    command: "npm start"
-    links:
-      - db
   db:
     image: "mysql:8"
     volumes:
@@ -20,3 +7,13 @@ services:
       - HOST_HOSTNAME=localhost
       - MYSQL_ROOT_PASSWORD=bd
       - MYSQL_DATABASE=projeto_bd
+  node:
+    build: .
+    user: node
+    environment:
+      - NODE_ENV=production
+    expose:
+      - "3333"
+    command: ["node", "dist/index.js"]
+    links:
+      - db
