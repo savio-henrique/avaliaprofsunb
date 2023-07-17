@@ -1,8 +1,8 @@
 import axios from "axios";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 import { toast, ToastContainer } from "react-toastify";
-import { NavLink } from "react-router-dom";
+import { NavLink, Navigate } from "react-router-dom";
 
 const FormContainer = styled.form`
   display: flex;
@@ -41,18 +41,8 @@ const Button = styled.button`
   height: 42px;
 `;
 
-const Login = ({ setLogin}) => {
+const Login = ({ setLogin, isLogged}) => {
   const ref = useRef();
-  const [onEdit, setOnEdit] = useState(null);
-
-  useEffect(() => {
-    if (onEdit) {
-      const user = ref.current;
-
-      user.matricula.value = onEdit.matricula;
-      user.senha.value = onEdit.senha;
-    }
-  }, [onEdit]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,25 +55,32 @@ const Login = ({ setLogin}) => {
     ) {
       return toast.warn("Preencha todos os campos!");
     }
-    if (onEdit) {
-        await axios
-        .post("http://localhost:3333/auth/",{
-            matricula :user.matricula.value,
-            senha:user.senha.value
-        })
-        .then(({ data }) => {
-            console.log(data)
-            toast.success(data)
-        })
-        .catch(({ data }) => toast.error(data));
-        setLogin(true)
-    }
+
+    await axios
+    .post("http://localhost:3333/auth/",{
+        matricula :user.matricula.value,
+        senha:user.senha.value
+    })
+    .then(({ data }) => {
+        console.log(data)
+        if (data){
+          setLogin(true);
+          toast.success('Logado com sucesso!')
+        }else{
+          toast.error('Login não existe!')
+        }   
+    })
+    .catch(({ data }) => toast.error(data));
+    
 
     user.matricula.value = "";
     user.senha.value = "";
-    setOnEdit(null);
+
     };
 
+  if(isLogged){
+    return <Navigate to="/" />
+  }
   return (
     <>
         <FormContainer ref={ref} onSubmit={handleSubmit}>

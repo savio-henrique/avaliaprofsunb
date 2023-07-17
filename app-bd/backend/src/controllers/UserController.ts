@@ -54,7 +54,7 @@ class ControllerUser implements IUserController{
                     email: dados.str_email,
                     nome: dados.str_nome,
                     sobrenome: dados.str_sobrenome,
-                    curso: dados.fk_curso,
+                    curso: dados.str_curso,
                     senha: dados.str_senha,
                     foto: dados.blob_foto,
                     status: dados.bo_status
@@ -67,11 +67,13 @@ class ControllerUser implements IUserController{
 
     async create(user:IUser): Promise<boolean> {
         var result = false;
-        var imgHex = fs.readFileSync('public/images/User-Profile-PNG.png').toString('hex')
         await this.use_query_data("INSERT INTO `Estudantes` VALUES(?,?,?,?,?,?,?,?)",
-        [user.matricula,user.email,user.nome,user.sobrenome,user.curso,user.senha,imgHex,true])
-        .finally(()=>{
+        [user.matricula,user.email,user.nome,user.sobrenome,user.curso,user.senha,user.foto,true])
+        .then(()=>{
             result = true;
+        })
+        .catch((error)=>{
+            result = false
         })
         return result;
     }  
@@ -99,7 +101,7 @@ class ControllerUser implements IUserController{
                 email: resultado.str_email,
                 nome: resultado.str_nome,
                 sobrenome: resultado.str_sobrenome,
-                curso: resultado.fk_curso,
+                curso: resultado.str_curso,
                 senha: resultado.str_senha,
                 foto: resultado.blob_foto,
                 status: resultado.bo_status
@@ -139,8 +141,10 @@ class ControllerUser implements IUserController{
 
         await this.use_query_data(sql,[matricula,senha])
         .then ((result) =>{
-            if (result.length != 0) return
+            if (result.length == 0) return
             final = true
+        }).catch((error) =>{
+            return false
         })
         
         return final;
@@ -148,8 +152,8 @@ class ControllerUser implements IUserController{
 }
 
 class UserRoutes{
-    static instance : UserRoutes
-    static controladora : IUserController
+    private static instance : UserRoutes
+    private static controladora : IUserController
 
     private constructor(){
         UserRoutes.controladora = new ControllerUser();
@@ -175,7 +179,7 @@ class UserRoutes{
             sobrenome: resposta.sobrenome,
             curso: resposta.curso,
             senha: md5(resposta.senha),
-            foto: new Blob,
+            foto: resposta.foto,
             status: resposta.status
         }
         return res.send(await UserRoutes.controladora.create(user));

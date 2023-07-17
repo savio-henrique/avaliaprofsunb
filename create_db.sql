@@ -19,7 +19,6 @@ CREATE TABLE `Estudantes` (
 CREATE TABLE `Departamentos` (
   `pk_codigo` int NOT NULL,
   `str_nome` varchar(255) DEFAULT NULL,
-  `bo_status` tinyint(1) NOT NULL,
   PRIMARY KEY (`pk_codigo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -45,7 +44,7 @@ CREATE TABLE `Disciplinas` (
   `pk_codigo` char(7) NOT NULL,
   `fk_departamento` int NOT NULL,
   `str_nome` varchar(255) NOT NULL,
-  `bo_status` tinyint(1) NOT NULL,
+  `bo_status` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`pk_codigo`),
   UNIQUE KEY `Disciplinas_UN` (`pk_codigo`,`str_nome`,`bo_status`),
   KEY `Disciplinas_FK` (`fk_departamento`),
@@ -138,3 +137,11 @@ CREATE TABLE `Turma_Est` (
   CONSTRAINT `Turma_Est_FK_Est` FOREIGN KEY (`fk_estudante`) REFERENCES `Estudantes` (`pk_matricula`),
   CONSTRAINT `Turma_Est_FK_Turma` FOREIGN KEY (`fk_turma`) REFERENCES `Turmas` (`pk_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--import 
+
+LOAD DATA INFILE '/var/lib/mysql-files/departamentos_2023-1.csv' 
+INTO TABLE Departamentos 
+FIELDS TERMINATED BY ',' 
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;

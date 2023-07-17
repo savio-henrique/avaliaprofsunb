@@ -3,6 +3,7 @@ import axios from "axios";
 import styled from "styled-components";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Table = styled.table`
   width: 100%;
@@ -41,32 +42,31 @@ export const Td = styled.td`
   }
 `;
 
-const Grid = ({ users, setUsers, setOnEdit }) => {
+const Grid = ({ users , getUsers}) => {
+  const navigate = useNavigate();
+
   const handleEdit = (item) => {
-    setOnEdit(item);
+    navigate(`/user/${item.matricula}`)
   };
 
   const handleDelete = async (id) => {
     await axios
       .delete("http://localhost:3333/user/" + id)
       .then(({ data }) => {
-        const newArray = users.filter((user) => user.matricula !== id);
-
-        setUsers(newArray);
         toast.success(data);
       })
       .catch(({ data }) => toast.error(data));
 
-    setOnEdit(null);
+      getUsers();
   };
 
   return (
     <Table>
       <Thead>
         <Tr>
+          <Th>Matricula</Th>
           <Th>Nome</Th>
-          <Th>Email</Th>
-          <Th onlyWeb>Fone</Th>
+          <Th onlyWeb>Email</Th>
           <Th></Th>
           <Th></Th>
         </Tr>
@@ -74,10 +74,10 @@ const Grid = ({ users, setUsers, setOnEdit }) => {
       <Tbody>
         {users.map((item, i) => (
           <Tr key={i}>
+            <Td width="30%">{item.matricula}</Td>
             <Td width="30%">{item.nome}</Td>
-            <Td width="30%">{item.email}</Td>
-            <Td width="20%" onlyWeb>
-              {item.fone}
+            <Td width="30%" onlyWeb>
+              {item.email}
             </Td>
             <Td alignCenter width="5%">
               <FaEdit onClick={() => handleEdit(item)} />

@@ -1,8 +1,9 @@
 import axios from "axios";
-import React, { useRef} from "react";
+import React, { useRef, useState} from "react";
 import styled from "styled-components";
 import { toast, ToastContainer } from "react-toastify";
-import { NavLink } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import defaultImage from "./../../images/User-Profile-PNG.png"
 
 const FormContainer = styled.form`
   display: flex;
@@ -48,6 +49,7 @@ const Button = styled.button`
 
 const Signup = () => {
   const ref = useRef();
+  const [signed,setSigned] = useState(false)
 
   const fileToHex = file => new Promise((resolve,reject) => {
     var fr = new FileReader();
@@ -69,6 +71,11 @@ const Signup = () => {
 
     const user = ref.current;
     
+    var image = await axios.get(defaultImage,{responseType: 'blob'}).then((response)=>{
+        var image = new File([response.data],'defaultImage') 
+        return image
+    })
+
     if (
       !user.matricula.value ||
       !user.nome.value ||
@@ -77,13 +84,13 @@ const Signup = () => {
       !user.email_conf.value ||
       !user.curso.value ||
       !user.senha.value ||
-      !user.senha_conf.value ||
-      !user.foto.value 
+      !user.senha_conf.value  
     ) {
       return toast.warn("Preencha todos os campos!");
     }
-
-    var foto = await fileToHex(user.foto.files[0])
+    
+    
+    var foto = (user.foto.value) ? await fileToHex(user.foto.files[0]) : await fileToHex(image)
 
     if((user.email.value !== user.email_conf.value) || (user.senha.value !== user.senha_conf.value)){
         return toast.warn("Os campos de confirmação precisam ser idênticos!");
@@ -99,7 +106,14 @@ const Signup = () => {
         foto:foto,
         status: true
     })
-    .then(({ data }) => toast.success(data))
+    .then(({ data }) => {
+        if(data){
+            toast.success('Cadastro realizado!')
+            setSigned(true)
+        } else{
+            toast.error('Cadastro não foi realizado!')
+        }
+    })
     .catch(({ data }) => toast.error(data));
 
     user.matricula.value = "";
@@ -112,6 +126,11 @@ const Signup = () => {
     user.senha_conf.value = "";
     user.foto.value = "";
   };
+  if(signed){
+    return (
+        <Navigate to="/" />
+    )
+  }
 
   return (
     <>
@@ -163,7 +182,7 @@ const Signup = () => {
             </InputArea>
         </Section>
         
-        <NavLink to="/"><Button type="submit">CADASTRAR</Button></NavLink>
+        <Button type="submit">CADASTRAR</Button>
         </FormContainer>
        <ToastContainer autoClose={3000} position={toast.POSITION.BOTTOM_LEFT} />
     </>

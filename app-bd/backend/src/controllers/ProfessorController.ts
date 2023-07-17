@@ -1,31 +1,25 @@
 import connection from "../services/database";
-import md5 from 'md5'
 import { Request, Response } from "express";
 import { Connection } from "mysql2";
-import fs from 'fs';
 
-interface IUser{
+interface IProf{
     matricula: number,
-    email: string,
     nome: string,
     sobrenome: string,
-    curso : string,
-    senha: string,
     foto: Blob,
+    departamento : number,
     status: boolean
 } 
 
-interface IUserController{
-    list() : Promise<Array<IUser>>;
-    create(user:IUser) : Promise<boolean>;
-    read(matricula:number) : Promise<IUser>;
-    update(user:IUser) : Promise<boolean>;
+interface IProfController{
+    list() : Promise<Array<IProf>>;
+    create(prof:IProf) : Promise<boolean>;
+    read(matricula:number) : Promise<IProf>;
+    update(prof:IProf) : Promise<boolean>;
     delete(matricula:number) : Promise<boolean>;
-    auth(matricula:number,senha:string): Promise<boolean>;
-
 }
 
-class ControllerUser implements IUserController{
+class ControllerProf implements IProfController{
     database: Connection
 
     constructor(){
@@ -42,76 +36,72 @@ class ControllerUser implements IUserController{
         return result[0]
     }
 
-    async list(): Promise<Array<IUser>> {
-        var final = new Array<IUser>
-        var sql = "SELECT * FROM `Estudantes` WHERE `bo_status` IS NOT FALSE"
+    async list(): Promise<Array<IProf>> {
+        var final = new Array<IProf>
+        var sql = "SELECT * FROM `Professores` WHERE `bo_status` IS NOT FALSE"
 
         await this.get_info(sql)
         .then((resultado) => {
             resultado.map((dados:any) => {
-                var user:IUser = {
+                var prof:IProf = {
                     matricula : dados.pk_matricula,
-                    email: dados.str_email,
                     nome: dados.str_nome,
                     sobrenome: dados.str_sobrenome,
-                    curso: dados.str_curso,
-                    senha: dados.str_senha,
                     foto: dados.blob_foto,
+                    departamento : dados.fk_departamento,
                     status: dados.bo_status
                 }
-                final.push(user); 
+                final.push(prof); 
             })
         })
         return final;
     } 
 
-    async create(user:IUser): Promise<boolean> {
+    async create(prof:IProf): Promise<boolean> {
         var result = false;
-        var imgHex = fs.readFileSync('public/images/User-Profile-PNG.png').toString('hex')
-        await this.use_query_data("INSERT INTO `Estudantes` VALUES(?,?,?,?,?,?,?,?)",
-        [user.matricula,user.email,user.nome,user.sobrenome,user.curso,user.senha,imgHex,true])
-        .finally(()=>{
+        await this.use_query_data("INSERT INTO `Professores` VALUES(?,?,?,?,?,?)",
+        [prof.matricula,prof.nome,prof.sobrenome,prof.foto,prof.departamento,true])
+        .then(()=>{
             result = true;
+        })
+        .catch((error)=>{
+            result = false
         })
         return result;
     }  
 
-    async read(matricula:number): Promise<IUser> {
-        var user:IUser = {
+    async read(matricula:number): Promise<IProf> {
+        var prof:IProf = {
             matricula : 0,
-            email: '',
             nome: '',
             sobrenome: '',
-            curso: '',
-            senha: '',
             foto: new Blob,
+            departamento : 0,
             status: false
         }
-        var sql = "SELECT * FROM `Estudantes` WHERE `pk_matricula` = ?"
+        var sql = "SELECT * FROM `Professores` WHERE `pk_matricula` = ?"
 
         await this.use_query_data(sql,[matricula])
         .then((result:Array<any>) => {
             if (result.length == 0) return
             var resultado = result[0] 
             
-            user = {
+            prof = {
                 matricula : resultado.pk_matricula,
-                email: resultado.str_email,
                 nome: resultado.str_nome,
                 sobrenome: resultado.str_sobrenome,
-                curso: resultado.str_curso,
-                senha: resultado.str_senha,
                 foto: resultado.blob_foto,
+                departamento:resultado.fk_departamento,
                 status: resultado.bo_status
             }
         })
-        return user;
+        return prof;
     }  
 
-    async update(user:IUser): Promise<boolean> {
+    async update(prof:IProf): Promise<boolean> {
         var final = false;
-        var sql = "UPDATE `Estudantes` SET `pk_matricula` = ?,`str_email` = ? ,`str_nome` = ?,`str_sobrenome` = ?,`str_curso` = ?,`str_senha` = ?,`blob_foto` = ?,`bo_status` = ? WHERE `pk_matricula` = ?"
-        var values = [user.matricula,user.email,user.nome,user.sobrenome,user.curso,user.senha,user.foto,user.status,user.matricula]
+        var sql = "UPDATE `Professores` SET `pk_matricula` = ?,`str_nome` = ?,`str_sobrenome` = ?,`blob_foto` = ?,`fk_departamento` = ?,`bo_status` = ? WHERE `pk_matricula` = ?"
+        var values = [prof.matricula,prof.nome,prof.sobrenome,prof.foto,prof.departamento,true,prof.matricula]
 
         await this.use_query_data(sql,values)
         .then((result:Array<any>) => {
@@ -123,7 +113,7 @@ class ControllerUser implements IUserController{
 
     async delete(matricula:number): Promise<boolean> {
         var final = false
-        var sql = "DELETE FROM `Estudantes` WHERE pk_matricula = ?"
+        var sql = "DELETE FROM `Professores` WHERE pk_matricula = ?"
         
         await this.use_query_data(sql,[matricula])
         .then ((result) =>{
@@ -133,70 +123,62 @@ class ControllerUser implements IUserController{
         return final;
     }  
 
-    async auth(matricula:number, senha:string):Promise<boolean> {
-        var final = false;
-        return final;
-    }
 }
 
-class UserRoutes{
-    static instance : UserRoutes
-    static controladora : IUserController
+class ProfRoutes{
+    private static instance : ProfRoutes
+    private static controladora : IProfController
 
     private constructor(){
-        UserRoutes.controladora = new ControllerUser();
+        ProfRoutes.controladora = new ControllerProf();
     }
 
-    static getInstance():UserRoutes{
+    static getInstance():ProfRoutes{
         if (this.instance == null){        
-            this.instance = new UserRoutes();
+            this.instance = new ProfRoutes();
         }
         return this.instance;
     }
 
     public async index(req : Request, res : Response){
-        return res.json(await UserRoutes.controladora.list())
+        return res.json(await ProfRoutes.controladora.list())
     }
 
     public async create(req:Request, res:Response){
         var resposta = req.body
-        var user:IUser = {
+        var prof:IProf = {
             matricula : resposta.matricula,
-            email: resposta.email,
             nome: resposta.nome,
             sobrenome: resposta.sobrenome,
-            curso: resposta.curso,
-            senha: md5(resposta.senha),
-            foto: new Blob,
-            status: resposta.status
+            foto: resposta.foto,
+            departamento:resposta.departamento,
+            status: true
         }
-        return res.send(await UserRoutes.controladora.create(user));
+        return res.send(await ProfRoutes.controladora.create(prof));
     }
 
     public async read(req : Request, res: Response){
         var resposta = Number(req.params.id)
-        return res.send(await UserRoutes.controladora.read(resposta))
+        return res.send(await ProfRoutes.controladora.read(resposta))
     }
 
     public async update(req : Request, res: Response){
         var resposta = req.body
-        var user:IUser = {
+        var prof:IProf = {
             matricula : resposta.matricula,
-            email: resposta.email,
             nome: resposta.nome,
             sobrenome: resposta.sobrenome,
-            curso: resposta.curso,
-            senha: resposta.senha,
             foto: resposta.foto,
+            departamento:resposta.departamento,
             status: true
         }
-        return res.send(await UserRoutes.controladora.update(user))
+        return res.send(await ProfRoutes.controladora.update(prof))
     }
 
     public async delete(req: Request, res: Response){
         var resposta = Number(req.params.id)
-        return res.send(await UserRoutes.controladora.delete(resposta))
+        return res.send(await ProfRoutes.controladora.delete(resposta))
     }
 }
 
-export default UserRoutes;
+export default ProfRoutes;
