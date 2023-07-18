@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import Grid from "./Grid";
-import { toast, ToastContainer } from "react-toastify";
 
 const Container = styled.div`
   width: 100%;
@@ -15,15 +14,14 @@ const Container = styled.div`
 
 const Title = styled.h2``;
 
-const Users = ({users, getUsers}) => {
+const Users = ({users, getUsers , isAdmin}) => {
  
   return (
     <>
       <Container>
         <Title>USUÁRIOS</Title>
-        <Grid users={users} getUsers={getUsers}/>
+        <Grid users={users} getUsers={getUsers} isAdmin={isAdmin} />
       </Container>
-      <ToastContainer autoClose={3000} position={toast.POSITION.BOTTOM_LEFT} />
     </>
   );
 }

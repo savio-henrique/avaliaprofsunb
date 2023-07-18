@@ -47,7 +47,7 @@ const Button = styled.button`
   height: 42px;
 `;
 
-const Signup = () => {
+const Signup = ({getUsers}) => {
   const ref = useRef();
   const [signed,setSigned] = useState(false)
 
@@ -60,7 +60,6 @@ const Signup = () => {
         while (i--) // map to hex
             a[i] = (u[i] < 16 ? '0' : '') + u[i].toString(16);
         u = null; // free memory
-        console.log(a); // work with this
         resolve(a.toString().replaceAll(',',''))
     });
     fr.readAsArrayBuffer(file);
@@ -125,6 +124,8 @@ const Signup = () => {
     user.senha.value = "";
     user.senha_conf.value = "";
     user.foto.value = "";
+
+    getUsers();
   };
   if(signed){
     return (

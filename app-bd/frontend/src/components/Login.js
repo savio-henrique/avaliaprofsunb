@@ -41,7 +41,7 @@ const Button = styled.button`
   height: 42px;
 `;
 
-const Login = ({ setLogin, isLogged}) => {
+const Login = ({ setLogin, isLogged, setAdmin}) => {
   const ref = useRef();
 
   const handleSubmit = async (e) => {
@@ -62,10 +62,12 @@ const Login = ({ setLogin, isLogged}) => {
         senha:user.senha.value
     })
     .then(({ data }) => {
-        console.log(data)
-        if (data){
+        if (data.isLogged){
           setLogin(true);
           toast.success('Logado com sucesso!')
+          if (data.isAdmin !== false){
+            setAdmin(true);
+          }
         }else{
           toast.error('Login não existe!')
         }   

@@ -2,7 +2,6 @@ import connection from "../services/database";
 import md5 from 'md5'
 import { Request, Response } from "express";
 import { Connection } from "mysql2";
-import fs from 'fs';
 
 interface IUser{
     matricula: number,
@@ -21,7 +20,7 @@ interface IUserController{
     read(matricula:number) : Promise<IUser>;
     update(user:IUser) : Promise<boolean>;
     delete(matricula:number) : Promise<boolean>;
-    auth(matricula:number,senha:string): Promise<boolean>;
+    auth(matricula:number,senha:string): Promise<{isLogged:boolean,isAdmin:boolean}>;
 
 }
 
@@ -135,19 +134,29 @@ class ControllerUser implements IUserController{
         return final;
     }  
 
-    async auth(matricula:number, senha:string):Promise<boolean> {
-        var final = false;
-        var sql = "SELECT * FROM `Estudantes` WHERE pk_matricula = ? AND str_senha = ?"
+    async auth(matricula:number, senha:string):Promise<{isLogged:boolean,isAdmin:boolean}> {
+        var logged = false;
+        var admin = false;
+        var sql = "SELECT * FROM `Estudantes` WHERE `pk_matricula` = ? AND `str_senha` = ?"
 
         await this.use_query_data(sql,[matricula,senha])
         .then ((result) =>{
             if (result.length == 0) return
-            final = true
+            logged = true
         }).catch((error) =>{
             return false
         })
+        var sql = "SELECT * FROM `Administradores` WHERE `fk_estudante` = ?"
+
+        await this.use_query_data(sql,[matricula])
+        .then((result) => {
+            if (result.length == 0) return
+            admin = (logged) ?true: false
+        }).catch((error) =>{
+            admin = false
+        })
         
-        return final;
+        return {isLogged:logged,isAdmin:admin};
     }
 }
 

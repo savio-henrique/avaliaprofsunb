@@ -42,7 +42,38 @@ export const Td = styled.td`
   }
 `;
 
-const Grid = ({ users , getUsers}) => {
+const TagName = ({isAdmin}) => {
+  if (isAdmin){
+    return (
+      <>
+        <Th></Th>
+        <Th></Th>
+      </>
+    )
+  }else{
+    return
+  }
+}
+
+const AdminLevel = ({isAdmin, handleDelete, handleEdit, item}) =>{
+  if (isAdmin){
+    return (
+      <>
+        <Td alignCenter width="5%">
+          <FaEdit onClick={() => handleEdit(item)} />
+        </Td>
+        <Td alignCenter width="5%">
+          <FaTrash onClick={() => handleDelete(item.matricula)} />
+        </Td>
+      </>
+    )
+  }else{
+    return
+  }
+
+}
+
+const Grid = ({ users , getUsers, isAdmin}) => {
   const navigate = useNavigate();
 
   const handleEdit = (item) => {
@@ -67,8 +98,7 @@ const Grid = ({ users , getUsers}) => {
           <Th>Matricula</Th>
           <Th>Nome</Th>
           <Th onlyWeb>Email</Th>
-          <Th></Th>
-          <Th></Th>
+          <TagName isAdmin={isAdmin}/>
         </Tr>
       </Thead>
       <Tbody>
@@ -79,12 +109,7 @@ const Grid = ({ users , getUsers}) => {
             <Td width="30%" onlyWeb>
               {item.email}
             </Td>
-            <Td alignCenter width="5%">
-              <FaEdit onClick={() => handleEdit(item)} />
-            </Td>
-            <Td alignCenter width="5%">
-              <FaTrash onClick={() => handleDelete(item.matricula)} />
-            </Td>
+            <AdminLevel tag='row' isAdmin={isAdmin} handleDelete={handleDelete} handleEdit={handleEdit} item={item} />
           </Tr>
         ))}
       </Tbody>

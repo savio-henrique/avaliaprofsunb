@@ -85,7 +85,7 @@ const TagName = ({isAdmin}) => {
             <FaEdit onClick={() => handleEdit(item)} />
           </Td>
           <Td alignCenter width="5%">
-            <FaTrash onClick={() => handleDelete(item.matricula)} />
+            <FaTrash onClick={() => handleDelete(item.codigo)} />
           </Td>
         </>
       )
@@ -97,48 +97,44 @@ const TagName = ({isAdmin}) => {
 
 const CreateButton = ({isAdmin}) => {
     if (isAdmin){
-        return <NavLink to="/professor/create"><Button>Create</Button></NavLink>
+        return <NavLink to="/department/create"><Button>Create</Button></NavLink>
     }
 } 
 
-const Professors = ({ professors , getProfs, isAdmin}) => {
+const Departments = ({ departments , getDepto, isAdmin}) => {
   const navigate = useNavigate();
 
   const handleEdit = (item) => {
-    navigate(`/professor/${item.matricula}`)
+    navigate(`/department/${item.codigo}`)
   };
 
   const handleDelete = async (id) => {
     await axios
-      .delete("http://localhost:3333/professor/" + id)
+      .delete("http://localhost:3333/department/" + id)
       .then(({ data }) => {
         toast.success(data);
       })
       .catch(({ data }) => toast.error(data));
 
-      getProfs();
+      getDepto();
   };
 
   return (
     <Container>
-        <Title>PROFESSORES</Title>
+        <Title>DEPARTAMENTOS</Title>
         <Table>
         <Thead>
             <Tr>
-            <Th>Matricula</Th>
-            <Th>Nome</Th>
-            <Th onlyWeb>Departamento</Th>
-            <TagName isAdmin={isAdmin} />
+            <Th>Código</Th>
+            <Th>Nome do Departamento</Th>
+            <TagName isAdmin={isAdmin}/>
             </Tr>
         </Thead>
         <Tbody>
-            {professors.map((item, i) => (
+            {departments.map((item, i) => (
             <Tr key={i}>
-                <Td width="30%">{item.matricula}</Td>
-                <Td width="30%">{item.nome +" "+ item.sobrenome}</Td>
-                <Td width="30%" onlyWeb>
-                {item.departamento}
-                </Td>
+                <Td width="30%">{item.codigo}</Td>
+                <Td width="70%">{item.nome}</Td>
                 <AdminLevel isAdmin={isAdmin} handleDelete={handleDelete} handleEdit={handleEdit} item={item} />
             </Tr>
             ))}
@@ -149,4 +145,4 @@ const Professors = ({ professors , getProfs, isAdmin}) => {
   );
 };
 
-export default Professors;
+export default Departments;

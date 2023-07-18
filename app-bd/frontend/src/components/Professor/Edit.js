@@ -46,11 +46,11 @@ const Image = styled.img`
   border-radius: 20px;
 `;
 
-const Edit = ({ users }) => {
+const EditProf = ({ profs }) => {
   const ref = useRef();
   const param = useParams()
   const [image, setImage] = useState(null)
-  const edit = users.find(user => user.matricula == param.id)
+  const edit = profs.find(user => user.matricula == param.id)
   
   useEffect(()=> {
     const user = ref.current;
@@ -59,12 +59,10 @@ const Edit = ({ users }) => {
       user.matricula.value = edit.matricula
       user.nome.value = edit.nome
       user.sobrenome.value = edit.sobrenome
-      user.email.value = edit.email
-      user.curso.value = edit.curso
+      user.departamento.value = edit.departamento
       getImage()
     }
-  }
-    ,[edit,setImage]);  
+  },[edit,setImage]);  
 
     async function getImage(){
       var img = new Buffer.from(edit.foto.data,'binary').toString('base64')
@@ -95,21 +93,18 @@ const Edit = ({ users }) => {
       !user.matricula.value ||
       !user.nome.value ||
       !user.sobrenome.value ||
-      !user.email.value ||
-      !user.curso.value 
+      !user.departamento.value
     ) {
       return toast.warn("Preencha todos os campos!");
     }
 
 
     await axios
-      .put(`http://localhost:3333/user/${user.matricula.value}`,{
+      .put(`http://localhost:3333/professor/${user.matricula.value}`,{
           matricula :user.matricula.value,
           nome:user.nome.value,
           sobrenome:user.sobrenome.value,
-          email:user.email.value,
-          curso:user.curso.value,
-          senha:edit.senha,
+          departamento:user.departamento.value,
           foto:edit.foto,
           status: true
       })
@@ -119,9 +114,7 @@ const Edit = ({ users }) => {
     user.matricula.value = "";
     user.nome.value = "";
     user.sobrenome.value = "";
-    user.email.value = "";
-    user.curso.value = "";
-    user.senha.value = "";
+    user.departamento.value = "";
     user.foto.value = "";
   };
 
@@ -129,7 +122,7 @@ const Edit = ({ users }) => {
     <>
       
       <FormContainer ref={ref} onSubmit={handleSubmit}>
-        <Image src={image}/>
+        <Image src={image} />
         <InputArea>
           <Label>Matricula</Label>
           <Input name="matricula" />
@@ -143,12 +136,8 @@ const Edit = ({ users }) => {
           <Input name="sobrenome" />
         </InputArea>
         <InputArea>
-          <Label>E-mail</Label>
-          <Input name="email" type="email" />
-        </InputArea>
-        <InputArea>
-          <Label>Curso</Label>
-          <Input name="curso" />
+          <Label>Departamento</Label>
+          <Input name="departamento" />
         </InputArea>
         <InputArea>
           <Label>Foto</Label>
@@ -161,4 +150,4 @@ const Edit = ({ users }) => {
   );
 };
 
-export default Edit;
+export default EditProf;

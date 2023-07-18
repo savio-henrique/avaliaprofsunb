@@ -19,7 +19,11 @@ const Nav = styled.nav`
 const LoggedButtons = ({isLogged}) => {
     if (isLogged){
         return (
-            <NavLink to="/users">Usuários</NavLink>
+            <>
+                <NavLink to="/professors">Professores</NavLink>
+                <NavLink to="/departments">Departamentos</NavLink>
+                <NavLink to="/users">Usuários</NavLink>
+            </>
         )
     }
 }

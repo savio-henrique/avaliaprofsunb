@@ -145,3 +145,8 @@ INTO TABLE Departamentos
 FIELDS TERMINATED BY ',' 
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
+
+CREATE VIEW Prof_Depto AS
+SELECT prof.str_nome AS prof_nome, prof.str_sobrenome AS prof_sobrenome, depto.str_nome AS depto_nome
+FROM Professores AS prof, Departamento AS depto 
+WHERE prof.fk_departamento = depto.pk_codigo;
