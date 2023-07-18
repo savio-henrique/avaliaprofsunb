@@ -30,5 +30,27 @@ docker-compose up -d
 Logo após deve entrar no terminal do mysql do container.
 
 ```
-docker exec -it 
+docker exec -it avaliaprofsunb_db_1 mysql -p
+// senha: bd
+
+use projeto_bd;
+
+source /var/lib/mysql-files/create_db.sql;
+\q
 ```
+
+Após isso, deve se iniciar os servidores de front e de backend:
+
+```
+cd app-bd/frontend
+yarn start
+```
+
+e
+
+```
+cd app-bd/backend
+yarn dev
+```
+
+A aplicação deve abrir em seu computador!!
