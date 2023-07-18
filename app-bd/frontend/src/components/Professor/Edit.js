@@ -43,7 +43,6 @@ const Button = styled.button`
 
 const Image = styled.img`
   max-height: 200px;
-  border-radius: 20px;
 `;
 
 const EditProf = ({ profs }) => {
@@ -60,17 +59,18 @@ const EditProf = ({ profs }) => {
       user.nome.value = edit.nome
       user.sobrenome.value = edit.sobrenome
       user.departamento.value = edit.departamento
+      
+      async function getImage(){
+        var img = new Buffer.from(edit.foto.data,'binary').toString('base64')
+  
+        var file = await dataURLtoFile('data:text/plain;base64,' + img,'hexstring.txt').text()
+        var text = new Buffer.from(file,'hex').toString('base64')
+        setImage('data:image/png;base64,' + text)
+      }
+      
       getImage()
     }
   },[edit,setImage]);  
-
-    async function getImage(){
-      var img = new Buffer.from(edit.foto.data,'binary').toString('base64')
-
-      var file = await dataURLtoFile('data:text/plain;base64,' + img,'hexstring.txt').text()
-      var text = new Buffer.from(file,'hex').toString('base64')
-      setImage('data:image/png;base64,' + text)
-    }
 
     function dataURLtoFile(dataurl, filename) {
       var arr = dataurl.split(','),

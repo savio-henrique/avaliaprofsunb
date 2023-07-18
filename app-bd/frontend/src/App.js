@@ -18,6 +18,8 @@ import CreateProf from "./components/Professor/CreateProf";
 import AdminRequired from "./components/AdminRequired";
 import EditProf from "./components/Professor/Edit";
 import Departments from "./components/Departamento/Grid";
+import EditDepto from "./components/Departamento/Edit";
+import CreateDepto from "./components/Departamento/Create";
 
 function App() {
   const [login, setLogin] = useState(false);
@@ -77,9 +79,9 @@ function App() {
             <Route element={<AdminRequired isAdmin={isAdmin}/>}>
               <Route path="professor/create" element={<CreateProf getProfs={getProfs}/>}/>
               <Route path="professor/:id" element={<EditProf profs={professors}/>}/>
-{/* 
-              <Route path="department/create" element={<CreateDepto depto={departments}/>}/>
-              <Route path="department/:id" element={<EditDepto depto={departments}/>}/> */}
+
+              <Route path="department/create" element={<CreateDepto getDepto={getDepto}/>}/>
+              <Route path="department/:id" element={<EditDepto depto={departments}/>}/>
             </Route>
             
           </Route>
