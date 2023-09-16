@@ -138,11 +138,12 @@ CREATE TABLE `Turma_Est` (
   CONSTRAINT `Turma_Est_FK_Turma` FOREIGN KEY (`fk_turma`) REFERENCES `Turmas` (`pk_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---import 
+-- import 
 
 LOAD DATA INFILE '/var/lib/mysql-files/departamentos_2023-1.csv' 
 INTO TABLE Departamentos 
 FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 
