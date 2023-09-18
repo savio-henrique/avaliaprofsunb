@@ -4,53 +4,18 @@
 
 ### Instruções iniciais
 
-Após clonar o repositório, via interface de comando entrar na pasta `app-bd/frontend` e instalar suas dependências.
+***Certifique-se de que a rede 172.20.0.0/24, em seu docker, esteja disponível para o funcionamento dos contêineres.***
+
+Após clonar o repositório, execute o seguinte comando em seu terminal:
 
 ```
-cd app-bd/frontend
-yarn
-// ou npm install
+docker-compose build
 ```
 
-Após isso, vai entrar na pasta `app-bd/backend` e fazer o mesmo.
+Em seguida execute:
 
 ```
-cd ../backend
-yarn
-// ou npm install
-```
-
-Somente então deve iniciar o Container do Banco de Dados.
-
-```
-cd ../../
 docker-compose up -d
 ```
 
-Logo após deve entrar no terminal do mysql do container.
-
-```
-docker exec -it avaliaprofsunb_db_1 mysql -p
-// senha: bd
-
-use projeto_bd;
-
-source /var/lib/mysql-files/create_db.sql;
-\q
-```
-
-Após isso, deve se iniciar os servidores de front e de backend:
-
-```
-cd app-bd/frontend
-yarn start
-```
-
-e
-
-```
-cd app-bd/backend
-yarn dev
-```
-
-A aplicação deve abrir em seu computador!!
+Abra seu navegador e acesse ```172.20.0.4:3000``` ou então ```localhost:3000``` e então a aplicação deve abrir em seu computador!!
