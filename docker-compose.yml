@@ -1,20 +1,73 @@
 services:
+  # Database MySQL Container
   db:
-    build: .
+    image: mysql:8 # Build from predefined image
     volumes:
       - /var/lib/mysql
-      - ./:/var/lib/mysql-files/
+      - ./database/create_db.sql:/docker-entrypoint-initdb.d/1.sql
     environment:
+      # Setting up MySQL Variables
       - HOST_HOSTNAME=localhost
       - MYSQL_ROOT_PASSWORD=bd
       - MYSQL_DATABASE=projeto_bd
+    ports:
+      # Expose 3306 port
+      - "3306:3306"
     networks:
-      back-tier:
-        ipv4_address: 172.20.0.2
+      projeto_bd:
+        # Set local IP address to 172.20.0.2
+        ipv4_address: "172.20.0.2"
+    # Check if MySQL is ready for connections
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "host",
+          "-p$$MYSQL_ROOT_PASSWORD",
+        ]
+      timeout: 10s
+      retries: 10
+
+  # Backend Node.js Container
+  backend:
+    build: ./app-bd/backend/ # Building from Dockerfile
+    volumes:
+      # Setting up the volume for fast testing w/o resetting the container
+      - ./app-bd/backend/src:/usr/src/app/src
+    ports:
+      # Expose 3333 port
+      - "3333:3333"
+    networks:
+      projeto_bd:
+        # Set local IP address to 172.20.0.3
+        ipv4_address: "172.20.0.3"
+    # Setting dependency on the MySQL connection
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Frontend React Container
+  frontend:
+    build: ./app-bd/frontend/ # Building from Dockerfile
+    volumes:
+      # Setting up the volume for fast testing w/o resetting the container
+      - ./app-bd/frontend/src:/usr/src/app/src
+    ports:
+      # Expose 3000 port
+      - "3000:3000"
+    networks:
+      projeto_bd:
+        # Set local IP address to 172.20.0.4
+        ipv4_address: "172.20.0.4"
 
 networks:
-  back-tier:
-    ipagm:
+  projeto_bd:
+    ipam:
       driver: default
       config:
         - subnet: "172.20.0.0/24"

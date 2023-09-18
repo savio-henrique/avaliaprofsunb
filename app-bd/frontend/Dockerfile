@@ -1,15 +1,23 @@
 FROM node:18
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-COPY ./package*.json ./
+# Install app dependencies
+COPY ./package.json ./
 
-RUN npm install yarn
+RUN npm install
+# If you are building your code for production
+# RUN npm ci --omit=dev
 
-RUN yarn
+# Bundle app source
 
 COPY . .
 
 EXPOSE 3000
 
-RUN ["yarn", "start"]
+CMD [ "npm" , "run" , "start" ]
+
+# if for production
+# CMD [ "npm" , "run" , "build" ]
+
+# CMD [ "npm" , "run", "start" ]

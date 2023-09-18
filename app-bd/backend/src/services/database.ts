@@ -1,9 +1,5 @@
 import mysql from 'mysql2';
 
-// run on docker mysql container
-//ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'bd'
-
-
 const connection = mysql.createConnection({
     host : '172.20.0.2',
     user : 'root',

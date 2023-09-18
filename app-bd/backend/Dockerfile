@@ -1,15 +1,23 @@
 FROM node:18
 
-WORKDIR /home/node/app
+WORKDIR /usr/src/app
 
-COPY ./package*.json ./
+# Install app dependencies
+COPY ./package.json ./
 
-RUN npm install yarn
+RUN npm install
+# If you are building your code for production
+# RUN npm ci --omit=dev
 
-RUN yarn
+# Bundle app source
 
 COPY . .
 
-RUN [ "yarn", "tsc"]
-
 EXPOSE 3333
+
+CMD [ "npm" , "run" , "dev" ]
+
+# if for production
+# CMD [ "npm" , "run" , "build" ]
+
+# CMD [ "node" , "dist/index.js" ]
