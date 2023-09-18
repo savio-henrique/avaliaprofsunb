@@ -1,6 +1,6 @@
 # Sistema de Gerenciamento de Avaliações
 
-### Para rodar na sua máquina você precisa ter o `Node` instalado, o `npm` ou o `yarn`, e o Docker e Docker-Compose.
+## Para rodar na sua máquina você precisa ter o `Node` instalado, o `npm` ou o `yarn`, e o Docker e Docker-Compose
 
 ### Instruções iniciais
 
@@ -8,13 +8,13 @@
 
 Após clonar o repositório, execute o seguinte comando em seu terminal:
 
-```
+```bash
 docker-compose build
 ```
 
 Em seguida execute:
 
-```
+```bash
 docker-compose up -d
 ```
 
